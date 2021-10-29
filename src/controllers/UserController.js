@@ -12,7 +12,7 @@ class UserController {
 
   async index(req, res) {
     try {
-      const users = await User.findAll();
+      const users = await User.findAll({ attributes: ['id', 'name', 'email'] });
       return res.json(users);
     } catch (e) {
       return res.json(null);
@@ -21,9 +21,9 @@ class UserController {
 
   async show(req, res) {
     try {
-      const { id } = req.params;
-      const user = await User.findByPk(id);
-      return res.json(user);
+      const user = await User.findByPk(req.params.id);
+      const { id, name, email } = user;
+      return res.json({ id, name, email });
     } catch (e) {
       return res.json(null);
     }
@@ -31,16 +31,13 @@ class UserController {
 
   async update(req, res) {
     try {
-      const { id } = req.params;
-      if (!id) {
-        return res.status(400).json({ errors: ['Missing id parameter'] });
-      }
-      const user = await User.findByPk(id);
+      const user = await User.findByPk(req.userId);
       if (!user) {
         return res.status(400).json({ errors: ['User does not exist'] });
       }
       const updatedUser = await user.update(req.body);
-      return res.json(updatedUser);
+      const { id, name, email } = updatedUser;
+      return res.json({ id, name, email });
     } catch (e) {
       return res.status(400).json({ errors: e.errors.map((err) => err.message) });
     }
@@ -48,11 +45,7 @@ class UserController {
 
   async delete(req, res) {
     try {
-      const { id } = req.params;
-      if (!id) {
-        return res.status(400).json({ errors: ['Missing id parameter'] });
-      }
-      const user = await User.findByPk(id);
+      const user = await User.findByPk(req.userId);
       if (!user) {
         return res.status(400).json({ errors: ['User does not exist'] });
       }
