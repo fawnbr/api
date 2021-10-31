@@ -12,6 +12,6 @@ module.exports = {
     underscored: true,
     underscoredAll: true,
     createdAt: 'created_at',
-    updateAt: 'updated_at',
+    updatedAt: 'updated_at',
   },
 };

@@ -1,9 +1,17 @@
 import Student from '../models/Student';
+import Photo from '../models/Photo';
 
 class StudentController {
   async index(req, res) {
     try {
-      const students = await Student.findAll();
+      const students = await Student.findAll({
+        attributes: ['id', 'name', 'surname', 'email', 'age', 'weight', 'height'],
+        order: [['id', 'DESC'], [Photo, 'id', 'DESC']],
+        include: {
+          model: Photo,
+          attributes: ['filename'],
+        },
+      });
       return res.json(students);
     } catch (e) {
       return res.json(null);
@@ -16,7 +24,14 @@ class StudentController {
       if (!id) {
         return res.status(400).json({ errors: ['Missing id parameter'] });
       }
-      const student = await Student.findByPk(id);
+      const student = await Student.findByPk(id, {
+        attributes: ['id', 'name', 'surname', 'email', 'age', 'weight', 'height'],
+        order: [['id', 'DESC'], [Photo, 'id', 'DESC']],
+        include: {
+          model: Photo,
+          attributes: ['url', 'filename'],
+        },
+      });
       if (!student) {
         return res.status(400).json({ errors: ['Student does not exist'] });
       }
